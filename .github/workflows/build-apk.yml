@@ -11,20 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get project
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Unpack Android project
-        run: |
-          unzip -q KotykBihun_Android_Phone_Ready.zip -d project
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-      - name: Set up Android
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK
+      - name: Install Android SDK packages
         run: |
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
-          yes | sdkmanager --licenses || true
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Extract Android project
+        run: |
+          unzip -o KotykBihun_Android_Phone_Ready.zip -d android_project
 
       - name: Install Gradle
         run: |
@@ -33,12 +38,11 @@ jobs:
           echo "$GITHUB_WORKSPACE/gradle-8.11.1/bin" >> $GITHUB_PATH
 
       - name: Build APK
-        run: |
-          cd project/KotykBihun_Android_Phone
-          gradle :app:assembleDebug --no-daemon
+        working-directory: android_project/KotykBihun_Android_Phone
+        run: gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: KotykBihun-APK
-          path: project/KotykBihun_Android_Phone/app/build/outputs/apk/debug/app-debug.apk
+          path: android_project/KotykBihun_Android_Phone/app/build/outputs/apk/debug/app-debug.apk
