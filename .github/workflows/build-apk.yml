@@ -1,4 +1,4 @@
-  name: Build Android APK
+name: Build Android APK
 
 on:
   workflow_dispatch:
@@ -19,8 +19,6 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
-        with:
-          packages: 'platform-tools'
 
       - name: Install Android SDK packages
         run: |
@@ -35,7 +33,7 @@ jobs:
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
           unzip -q gradle-8.11.1-bin.zip
-          echo "$GITHUB_WORKSPACE/gradle-8.11.1/bin" >> $GITHUB_PATH
+          echo "$GITHUB_WORKSPACE/gradle-8.11.1/bin" >> "$GITHUB_PATH"
 
       - name: Build APK
         working-directory: android_project/KotykBihun_Android_Phone
